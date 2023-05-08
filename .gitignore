@@ -1,0 +1,8 @@
+# Jetbrains
+.idea
+
+# MacOS
+.DS_Store
+
+# Golang
+go.sum

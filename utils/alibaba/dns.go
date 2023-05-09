@@ -6,8 +6,8 @@ import (
 	"github.com/alibabacloud-go/tea/tea"
 )
 
-// GetAllDNSList 根据域名获取所有的DNS解析列表
-func GetAllDNSList(domainName *string) (*[]*alidns20150109.DescribeDomainRecordsResponseBodyDomainRecordsRecord, error) {
+// GetAllDNSListByDomainNameAndRR 根据域名获取所有的DNS解析列表
+func GetAllDNSListByDomainNameAndRR(domainName, rr *string) (*[]*alidns20150109.DescribeDomainRecordsResponseBodyDomainRecordsRecord, error) {
 	// 最终结果
 	var dnsList []*alidns20150109.DescribeDomainRecordsResponseBodyDomainRecordsRecord
 
@@ -20,6 +20,7 @@ func GetAllDNSList(domainName *string) (*[]*alidns20150109.DescribeDomainRecords
 			DomainName: domainName,
 			PageNumber: &currentPageNum,
 			PageSize:   tea.Int64(10),
+			RRKeyWord:  rr,
 		}
 		runtime := &util.RuntimeOptions{}
 		// 查询域名列表
@@ -38,4 +39,38 @@ func GetAllDNSList(domainName *string) (*[]*alidns20150109.DescribeDomainRecords
 		currentPageNum++
 	}
 	return &dnsList, nil
+}
+
+// AddDNSRecord 新增DNS解析记录
+func AddDNSRecord(domain, rr, ipAddress *string) error {
+	// 封装修改的参数
+	addDomainRecordRequest := &alidns20150109.AddDomainRecordRequest{
+		DomainName: domain,
+		RR:         rr,
+		Type:       tea.String("A"),
+		Value:      ipAddress,
+		TTL:        tea.Int64(600),
+		Line:       tea.String("default"),
+	}
+	runtime := &util.RuntimeOptions{}
+	// 执行修改
+	_, err := dnsClient.AddDomainRecordWithOptions(addDomainRecordRequest, runtime)
+	return err
+}
+
+// UpdateDNSRecord 更新DNS解析记录
+func UpdateDNSRecord(recordId, rr, ipAddress *string) error {
+	// 封装修改的参数
+	updateDomainRecordRequest := &alidns20150109.UpdateDomainRecordRequest{
+		RecordId: recordId,
+		RR:       rr,
+		Type:     tea.String("A"),
+		Value:    ipAddress,
+		TTL:      tea.Int64(600),
+		Line:     tea.String("default"),
+	}
+	runtime := &util.RuntimeOptions{}
+	// 执行修改
+	_, err := dnsClient.UpdateDomainRecordWithOptions(updateDomainRecordRequest, runtime)
+	return err
 }

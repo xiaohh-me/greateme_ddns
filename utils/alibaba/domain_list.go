@@ -9,7 +9,7 @@ import (
 // GetAllDomainList 获得所有的域名列表
 func GetAllDomainList() (*[]string, error) {
 	// 域名解表的结果
-	domainList := make([]string, 0)
+	var domainList []string
 
 	// 当前页码
 	var currentPageNum int32 = 1

@@ -3,6 +3,7 @@ module github.com/xiaohh-me/greateme_ddns
 go 1.19
 
 require (
+	github.com/alibabacloud-go/alidns-20150109/v4 v4.0.3
 	github.com/alibabacloud-go/darabonba-openapi/v2 v2.0.4
 	github.com/alibabacloud-go/domain-20180129/v4 v4.0.0
 	github.com/alibabacloud-go/tea v1.1.19

@@ -76,14 +76,19 @@ func SyncAllDomain(domainNameList *[]string) error {
 			} else {
 				log.Printf("新增%v解析记录成功，解析到IP地址为%v\n", domainName, *wanIp)
 			}
-		} else {
+		} else if strings.Compare(*targetRecord.Type, "A") != 0 ||
+			strings.Compare(*targetRecord.Value, *wanIp) != 0 ||
+			strings.Compare(*targetRecord.Line, "default") != 0 ||
+			*targetRecord.TTL != 600 {
 			// 需要修改
 			err = alibaba.UpdateDNSRecord(targetRecord.RecordId, &rr, wanIp)
 			if err != nil {
 				log.Printf("修改%v解析的时候发生错误，错误信息：%v\n", domainName, err)
 			} else {
-				log.Printf("修改%v解析记录成功，解析到IP地址为%v\n", domainName, *wanIp)
+				log.Printf("修改%v解析记录成功，解析到IP地址：%v，原类型：%v，原记录值：%v\n", domainName, *wanIp, *targetRecord.Type, *targetRecord.Value)
 			}
+		} else {
+			log.Printf("无需修改%v的解析记录，记录值为：%v\n", domainName, *wanIp)
 		}
 	}
 	return nil

@@ -8,6 +8,7 @@ require (
 	github.com/alibabacloud-go/domain-20180129/v4 v4.0.0
 	github.com/alibabacloud-go/tea v1.1.19
 	github.com/alibabacloud-go/tea-utils/v2 v2.0.1
+	github.com/go-ini/ini v1.67.0
 )
 
 require (

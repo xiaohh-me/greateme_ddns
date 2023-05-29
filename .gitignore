@@ -9,3 +9,6 @@ go.sum
 
 # exe
 *.exe
+
+# build dir
+/bin

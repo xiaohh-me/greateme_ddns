@@ -16,7 +16,7 @@ go env -w GOPROXY=https://goproxy.cn,direct
 go mod tidy
 ```
 ## 编译代码
-注意在Windows下编译的代码只能在Windows下执行，如果需要在Linux下运行则需要在Linux下从新编译，Windows下编译生成的是.exe可执行文件。执行以下代码进行编译：
+注意在Windows下编译的代码只能在Windows下执行，如果需要在Linux下运行则需要在Linux下从新编译，Windows下编译生成的是.exe可执行文件。执行以下代码进行编译（windows下需要安装git并且用git bash执行）：
 ```bash
 ./build.sh
 ```

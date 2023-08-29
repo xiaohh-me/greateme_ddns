@@ -7,50 +7,62 @@ import (
 )
 
 // GetConfig 获取配置文件内容
-func GetConfig(path *string) (*string, *string, *[]string, *time.Duration, error) {
+func GetConfig(path *string) (*string, *string, *string, *string, *[]string, *time.Duration, error) {
 	config, err := ini.Load(*path)
 	if err != nil {
-		return nil, nil, nil, nil, err
+		return nil, nil, nil, nil, nil, nil, err
 	}
 	// 读取阿里云相关的配置
-	accessKeyId, accessKeySecret, err := getAliyunConfig(config)
+	accessKeyId, accessKeySecret, domainEndpoint, dnsEndpoint, err := getAliyunConfig(config)
 	if err != nil {
-		return nil, nil, nil, nil, err
+		return nil, nil, nil, nil, nil, nil, err
 	}
 	// 读取域名相关配置
 	domainList, err := getDomainList(config)
 	if err != nil {
-		return nil, nil, nil, nil, err
+		return nil, nil, nil, nil, nil, nil, err
 	}
 	// 获取同步时间
 	durationMinute, err := getDurationMinute(config)
 	if err != nil {
-		return nil, nil, nil, nil, err
+		return nil, nil, nil, nil, nil, nil, err
 	}
 	// 读取域名配置
-	return accessKeyId, accessKeySecret, domainList, durationMinute, nil
+	return accessKeyId, accessKeySecret, domainEndpoint, dnsEndpoint, domainList, durationMinute, nil
 }
 
 // getAliyunConfig 获取阿里云相关配置
-func getAliyunConfig(config *ini.File) (*string, *string, error) {
+func getAliyunConfig(config *ini.File) (*string, *string, *string, *string, error) {
 	// 读取阿里云相关的配置
 	aliyunSection, err := config.GetSection("aliyun")
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, nil, err
 	}
 	// 读取accessKeyId
 	accessKeyIdKey, err := aliyunSection.GetKey("accessKeyId")
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, nil, err
 	}
 	accessKeyId := accessKeyIdKey.Value()
 	// 读取accessKeySecret
 	accessKeySecretKey, err := aliyunSection.GetKey("accessKeySecret")
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, nil, err
 	}
 	accessKeySecret := accessKeySecretKey.Value()
-	return &accessKeyId, &accessKeySecret, nil
+	// 读取域名的Endpoint
+	domainEndpointKey, err := aliyunSection.GetKey("domainEndpoint")
+	if err != nil {
+		return nil, nil, nil, nil, err
+	}
+	domainEndpoint := domainEndpointKey.Value()
+	// 读取dns的Endpoint
+	dnsEndpointKey, err := aliyunSection.GetKey("dnsEndpoint")
+	if err != nil {
+		return nil, nil, nil, nil, err
+	}
+	dnsEndpoint := dnsEndpointKey.Value()
+	return &accessKeyId, &accessKeySecret, &domainEndpoint, &dnsEndpoint, nil
 }
 
 // getDomainList 获取域名的配置列表

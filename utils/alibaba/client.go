@@ -16,14 +16,13 @@ var (
 )
 
 // InitClient 初始化阿里云域名请求的客户端
-func InitClient(accessKeyId *string, accessKeySecret *string) error {
+func InitClient(accessKeyId, accessKeySecret, domainEndpoint, dnsEndpoint *string) error {
 	// 初始化域名配置
 	domainConfig := &openapi.Config{
 		AccessKeyId:     accessKeyId,
 		AccessKeySecret: accessKeySecret,
+		Endpoint:        domainEndpoint,
 	}
-	// 访问的域名
-	domainConfig.Endpoint = tea.String("domain.aliyuncs.com")
 	domainResult, err := domain20180129.NewClient(domainConfig)
 	if err != nil {
 		return err
@@ -34,6 +33,7 @@ func InitClient(accessKeyId *string, accessKeySecret *string) error {
 	dnsConfig := &openapi.Config{
 		AccessKeyId:     accessKeyId,
 		AccessKeySecret: accessKeySecret,
+		Endpoint:        dnsEndpoint,
 	}
 	// 访问的域名
 	dnsConfig.Endpoint = tea.String("alidns.cn-hangzhou.aliyuncs.com")

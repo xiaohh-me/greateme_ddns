@@ -1,11 +1,11 @@
 # Golang对接阿里云域名DDNS的项目
 ## 环境要求
-需要 `golang 1.19.*` 的环境，推荐使用 `golang 1.19.9` 版本，各个操作系统的该版本号下载地址：
-- Windows amd64：[https://golang.google.cn/dl/go1.19.9.windows-amd64.zip](https://golang.google.cn/dl/go1.19.9.windows-amd64.zip)
-- Linux amd64：[https://golang.google.cn/dl/go1.19.9.linux-amd64.tar.gz](https://golang.google.cn/dl/go1.19.9.linux-amd64.tar.gz)
-- Linux arm64：[https://golang.google.cn/dl/go1.19.9.linux-arm64.tar.gz](https://golang.google.cn/dl/go1.19.9.linux-arm64.tar.gz)
-- MacOS amd64：[https://golang.google.cn/dl/go1.19.9.darwin-amd64.tar.gz](https://golang.google.cn/dl/go1.19.9.darwin-amd64.tar.gz)
-- MacOS arm64：[https://golang.google.cn/dl/go1.19.9.darwin-arm64.tar.gz](https://golang.google.cn/dl/go1.19.9.darwin-arm64.tar.gz)
+需要 `golang 1.20.*` 的环境，推荐使用 `golang 1.20.8` 版本，各个操作系统的该版本号下载地址：
+- Windows amd64：[https://golang.google.cn/dl/go1.20.8.windows-amd64.zip](https://golang.google.cn/dl/go1.20.8.windows-amd64.zip)
+- Linux amd64：[https://golang.google.cn/dl/go1.20.8.linux-amd64.tar.gz](https://golang.google.cn/dl/go1.20.8.linux-amd64.tar.gz)
+- Linux arm64：[https://golang.google.cn/dl/go1.20.8.linux-arm64.tar.gz](https://golang.google.cn/dl/go1.20.8.linux-arm64.tar.gz)
+- MacOS amd64：[https://golang.google.cn/dl/go1.20.8.darwin-amd64.tar.gz](https://golang.google.cn/dl/go1.20.8.darwin-amd64.tar.gz)
+- MacOS arm64：[https://golang.google.cn/dl/go1.20.8.darwin-arm64.tar.gz](https://golang.google.cn/dl/go1.20.8.darwin-arm64.tar.gz)
 ## 设置国内golang代理
 ```bash
 go env -w GO111MODULE=on
@@ -28,6 +28,8 @@ go mod tidy
 
 - `accessKeyId`: 改为阿里云的 `accessKey`
 - `accessKeySecret`: 改为阿里云的 `accessKeySecret`
+- `domainEndpoint`: 查询域名的Endpoint，默认为杭州，无需修改
+- `dnsEndpoint`: DNS的Endpoint，默认为深圳，可根据配置文件当中注释和地理位置进行修改
 - `domainList`: 域名列表，多个用逗号隔开
 - `durationMinute`: 时隔多久更新一次（单位为分钟），默认为十分钟，可无需修改
 

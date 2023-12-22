@@ -9,14 +9,13 @@ import (
 
 // WanIpResponse 请求获取公网IP地址返回的json结果
 type WanIpResponse struct {
-	Code uint16 `json:"code"`
-	Ip   string `json:"ip"`
+	Ip string `json:"ip"`
 }
 
 // GetWanIpAddress 获取公网IP地址
 func GetWanIpAddress() (*string, error) {
 	// 访问并获取公网IP地址
-	resp, err := http.Get(`http://119.23.247.9/ipv4`)
+	resp, err := http.Get(`https://jsonip.com/`)
 	// 方法执行完后关闭访问的body对象
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
@@ -38,9 +37,6 @@ func GetWanIpAddress() (*string, error) {
 	err = json.Unmarshal(result, ipResponse)
 	if err != nil {
 		return nil, err
-	}
-	if ipResponse.Code != 200 {
-		return nil, nil
 	}
 	return &ipResponse.Ip, nil
 }

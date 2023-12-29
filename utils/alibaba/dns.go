@@ -4,7 +4,7 @@ import (
 	alidns20150109 "github.com/alibabacloud-go/alidns-20150109/v4/client"
 	"github.com/alibabacloud-go/tea-utils/v2/service"
 	"github.com/alibabacloud-go/tea/tea"
-	"github.com/xiaohh-me/greateme_ddns/utils"
+	"strings"
 )
 
 // GetAllDNSListByDomainNameAndRR 根据域名获取所有的DNS解析列表
@@ -43,12 +43,12 @@ func GetAllDNSListByDomainNameAndRR(domainName, rr *string) (*[]*alidns20150109.
 }
 
 // AddDNSRecord 新增DNS解析记录
-func AddDNSRecord(domain, rr, ipAddress *string) error {
+func AddDNSRecord(domain, rr, ipAddress *string, dnsType *string) error {
 	// 封装修改的参数
 	addDomainRecordRequest := &alidns20150109.AddDomainRecordRequest{
 		DomainName: domain,
 		RR:         rr,
-		Type:       getIpType(ipAddress),
+		Type:       GetDNSType(dnsType),
 		Value:      ipAddress,
 		TTL:        tea.Int64(600),
 		Line:       tea.String("default"),
@@ -60,12 +60,12 @@ func AddDNSRecord(domain, rr, ipAddress *string) error {
 }
 
 // UpdateDNSRecord 更新DNS解析记录
-func UpdateDNSRecord(recordId, rr, ipAddress *string) error {
+func UpdateDNSRecord(recordId, rr, ipAddress *string, dnsType *string) error {
 	// 封装修改的参数
 	updateDomainRecordRequest := &alidns20150109.UpdateDomainRecordRequest{
 		RecordId: recordId,
 		RR:       rr,
-		Type:     getIpType(ipAddress),
+		Type:     GetDNSType(dnsType),
 		Value:    ipAddress,
 		TTL:      tea.Int64(600),
 		Line:     tea.String("default"),
@@ -76,14 +76,11 @@ func UpdateDNSRecord(recordId, rr, ipAddress *string) error {
 	return err
 }
 
-// getIpType 获取解析的IP地址类型
-func getIpType(ipAddress *string) *string {
-	isIpv4 := utils.IsIPv4Address(ipAddress)
-	var dnsType *string
-	if isIpv4 {
-		dnsType = tea.String("A")
-	} else {
-		dnsType = tea.String("AAAA")
+// GetDNSType 获取解析的IP地址类型
+func GetDNSType(dnsType *string) *string {
+	var recordType *string = tea.String("A")
+	if strings.Compare("ipv6", *dnsType) == 0 {
+		recordType = tea.String("AAAA")
 	}
-	return dnsType
+	return recordType
 }

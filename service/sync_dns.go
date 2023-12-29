@@ -70,18 +70,18 @@ func SyncAllDomain(domainNameList *[]string, dnsType *string) error {
 		}
 		if targetRecord == nil {
 			// 需要新增
-			err = alibaba.AddDNSRecord(&level2Domain, &rr, wanIp)
+			err = alibaba.AddDNSRecord(&level2Domain, &rr, wanIp, dnsType)
 			if err != nil {
 				log.Printf("新增%v解析的时候发生错误，错误信息：%v\n", domainName, err)
 			} else {
 				log.Printf("新增%v解析记录成功，解析到IP地址为%v\n", domainName, *wanIp)
 			}
-		} else if strings.Compare(*targetRecord.Type, "A") != 0 ||
+		} else if strings.Compare(*targetRecord.Type, *alibaba.GetDNSType(dnsType)) != 0 ||
 			strings.Compare(*targetRecord.Value, *wanIp) != 0 ||
 			strings.Compare(*targetRecord.Line, "default") != 0 ||
 			*targetRecord.TTL != 600 {
 			// 需要修改
-			err = alibaba.UpdateDNSRecord(targetRecord.RecordId, &rr, wanIp)
+			err = alibaba.UpdateDNSRecord(targetRecord.RecordId, &rr, wanIp, dnsType)
 			if err != nil {
 				log.Printf("修改%v解析的时候发生错误，错误信息：%v\n", domainName, err)
 			} else {

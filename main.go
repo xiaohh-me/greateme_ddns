@@ -13,7 +13,7 @@ import (
 // 云解析文档地址：https://next.api.aliyun.com/api/Alidns/2015-01-09/AddCustomLine?lang=GO
 
 func main() {
-	accessKeyId, accessKeySecret, domainEndpoint, dnsEndpoint, domainList, durationMinute, err := conf.GetConfig(tea.String("./conf/config.ini"))
+	accessKeyId, accessKeySecret, domainEndpoint, dnsEndpoint, domainList, dnsType, durationMinute, err := conf.GetConfig(tea.String("./conf/config.ini"))
 	if err != nil {
 		log.Fatalf("读取配置文件时候发生错误：%v\n", err)
 	}
@@ -24,12 +24,12 @@ func main() {
 	}
 	log.Println("域名和DNS解析客户端初始化成功")
 	for {
-		go _main(domainList)
+		go _main(domainList, dnsType)
 		time.Sleep(*durationMinute * time.Minute)
 	}
 }
 
-func _main(domainNameList *[]string) {
+func _main(domainNameList *[]string, dnsType *string) {
 	// 捕捉所有异常，兜底的方法
 	defer func() {
 		if err := recover(); err != nil {
@@ -38,7 +38,7 @@ func _main(domainNameList *[]string) {
 	}()
 
 	// 开始同步
-	err := service.SyncAllDomain(domainNameList)
+	err := service.SyncAllDomain(domainNameList, dnsType)
 	if err != nil {
 		log.Printf("同步域名信息的时候发生了异常：%v\n", err)
 	}

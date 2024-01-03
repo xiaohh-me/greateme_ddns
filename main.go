@@ -13,19 +13,19 @@ import (
 // 云解析文档地址：https://next.api.aliyun.com/api/Alidns/2015-01-09/AddCustomLine?lang=GO
 
 func main() {
-	accessKeyId, accessKeySecret, domainEndpoint, dnsEndpoint, domainList, dnsType, durationMinute, err := conf.GetConfig(tea.String("./conf/config.ini"))
+	dnsConfig, err := conf.GetConfig(tea.String("./conf/config.ini"))
 	if err != nil {
 		log.Fatalf("读取配置文件时候发生错误：%v\n", err)
 	}
 	// 初始化阿里云域名客户端
-	err = alibaba.InitClient(accessKeyId, accessKeySecret, domainEndpoint, dnsEndpoint)
+	err = alibaba.InitClient(dnsConfig.AccessKeyId, dnsConfig.AccessKeySecret, dnsConfig.DomainEndpoint, dnsConfig.DnsEndpoint)
 	if err != nil {
 		log.Fatalf("初始化阿里云域名客户端的时候发生了错误：%v\n", err)
 	}
 	log.Println("域名和DNS解析客户端初始化成功")
 	for {
-		go _main(domainList, dnsType)
-		time.Sleep(*durationMinute * time.Minute)
+		go _main(dnsConfig.DomainList, dnsConfig.DnsType)
+		time.Sleep(*dnsConfig.DurationMinute * time.Minute)
 	}
 }
 

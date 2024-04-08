@@ -1,13 +1,13 @@
 module github.com/xiaohh-me/greateme_ddns
 
-go 1.20
+go 1.21
 
 require (
-	github.com/alibabacloud-go/alidns-20150109/v4 v4.0.10
-	github.com/alibabacloud-go/darabonba-openapi/v2 v2.0.5
-	github.com/alibabacloud-go/domain-20180129/v4 v4.0.1
-	github.com/alibabacloud-go/tea v1.2.1
-	github.com/alibabacloud-go/tea-utils/v2 v2.0.4
+	github.com/alibabacloud-go/alidns-20150109/v4 v4.2.0
+	github.com/alibabacloud-go/darabonba-openapi/v2 v2.0.6
+	github.com/alibabacloud-go/domain-20180129/v4 v4.0.3
+	github.com/alibabacloud-go/tea v1.2.2
+	github.com/alibabacloud-go/tea-utils/v2 v2.0.5
 	github.com/go-ini/ini v1.67.0
 )
 
@@ -24,6 +24,6 @@ require (
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/tjfoc/gmsm v1.4.1 // indirect
-	golang.org/x/net v0.19.0 // indirect
+	golang.org/x/net v0.24.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 )

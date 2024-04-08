@@ -1,11 +1,11 @@
 # Golang对接阿里云域名DDNS的项目
 ## 环境要求
-需要 `golang 1.20.*` 的环境，推荐使用 `golang 1.20.8` 版本，各个操作系统的该版本号下载地址：
-- Windows amd64：[https://golang.google.cn/dl/go1.20.8.windows-amd64.zip](https://golang.google.cn/dl/go1.20.8.windows-amd64.zip)
-- Linux amd64：[https://golang.google.cn/dl/go1.20.8.linux-amd64.tar.gz](https://golang.google.cn/dl/go1.20.8.linux-amd64.tar.gz)
-- Linux arm64：[https://golang.google.cn/dl/go1.20.8.linux-arm64.tar.gz](https://golang.google.cn/dl/go1.20.8.linux-arm64.tar.gz)
-- MacOS amd64：[https://golang.google.cn/dl/go1.20.8.darwin-amd64.tar.gz](https://golang.google.cn/dl/go1.20.8.darwin-amd64.tar.gz)
-- MacOS arm64：[https://golang.google.cn/dl/go1.20.8.darwin-arm64.tar.gz](https://golang.google.cn/dl/go1.20.8.darwin-arm64.tar.gz)
+需要 `golang 1.21.*` 的环境，推荐使用 `golang 1.21.9` 版本，各个操作系统的该版本号下载地址：
+- Windows amd64：[https://golang.google.cn/dl/go1.21.9.windows-amd64.zip](https://golang.google.cn/dl/go1.21.9.windows-amd64.zip)
+- Linux amd64：[https://golang.google.cn/dl/go1.21.9.linux-amd64.tar.gz](https://golang.google.cn/dl/go1.21.9.linux-amd64.tar.gz)
+- Linux arm64：[https://golang.google.cn/dl/go1.21.9.linux-arm64.tar.gz](https://golang.google.cn/dl/go1.21.9.linux-arm64.tar.gz)
+- MacOS amd64：[https://golang.google.cn/dl/go1.21.9.darwin-amd64.tar.gz](https://golang.google.cn/dl/go1.21.9.darwin-amd64.tar.gz)
+- MacOS arm64：[https://golang.google.cn/dl/go1.21.9.darwin-arm64.tar.gz](https://golang.google.cn/dl/go1.21.9.darwin-arm64.tar.gz)
 ## 设置国内golang代理
 ```bash
 go env -w GO111MODULE=on

@@ -22,7 +22,7 @@ func SyncAllDomain(domainNameList *[]string, dnsType *string) error {
 	if err != nil {
 		return err
 	}
-	// 遍历所有需要同步DNS的域名，查询到他的二级域名
+	// 遍历所有需要同步DNS的域名，查询到它的二级域名
 	for _, domainName := range *domainNameList {
 		log.Printf("开始尝试同步域名：%v\n", domainName)
 		// 匹配的二级域名
@@ -54,7 +54,7 @@ func SyncAllDomain(domainNameList *[]string, dnsType *string) error {
 		log.Printf("成功查询到%v域名信息信息，二级域名：%v，rr值：%v\n", domainName, level2Domain, rr)
 		dnsList, err := alibaba.GetAllDNSListByDomainNameAndRR(&level2Domain, &rr)
 		if err != nil {
-			log.Printf("查询%v域名解析记录时候放生错误，错误信息：%v，将继续同步下一个域名\n", domainName, err)
+			log.Printf("查询%v域名解析记录时候发生错误，错误信息：%v，将继续同步下一个域名\n", domainName, err)
 			continue
 		}
 		var targetRecord *alidns20150109.DescribeDomainRecordsResponseBodyDomainRecordsRecord = nil

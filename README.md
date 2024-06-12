@@ -31,6 +31,7 @@ go mod tidy
 - `domainEndpoint`: 查询域名的Endpoint，默认为杭州，无需修改
 - `dnsEndpoint`: DNS的Endpoint，默认为深圳，可根据配置文件当中注释和地理位置进行修改
 - `domainList`: 域名列表，多个用逗号隔开
+- `dnsType`: 解析类型，只能填写 ipv4 和 ipv6，默认为ipv4（注意全部小写且不能为大写）
 - `durationMinute`: 时隔多久更新一次（单位为分钟），默认为十分钟，可无需修改
 
 ## 执行代码

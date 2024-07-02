@@ -22,6 +22,8 @@ type DnsConfig struct {
 	DomainList *[]string
 	// DnsType 解析类型，只能是 ipv4 和 ipv6 （注意全部小写且不能为大写）
 	DnsType *string
+	// ExecType 执行类型，可选值：single 和 repetition ，single：只执行一次，需要配合系统的定时任务执行。repetition重复执行，需要配合durationMinute配置项执行
+	ExecType *string
 	// DurationMinute 时隔多久同步一次域名解析，单位为分钟
 	DurationMinute *time.Duration
 }
@@ -49,7 +51,7 @@ func GetConfig(path *string) (*DnsConfig, error) {
 		return nil, errors.New(fmt.Sprintf("IP地址解析类型错误，请填写ipv4或ipv6（且只能填写小写）！您填写的值为：%v", *dnsType))
 	}
 	// 获取同步时间
-	durationMinute, err := getDurationMinute(config)
+	execType, durationMinute, err := getDurationMinute(config)
 	if err != nil {
 		return nil, err
 	}
@@ -67,6 +69,8 @@ func GetConfig(path *string) (*DnsConfig, error) {
 		DomainList: domainList,
 		// DnsType 解析类型，只能是 ipv4 和 ipv6 （注意全部小写且不能为大写）
 		DnsType: dnsType,
+		// ExecType 执行类型，可选值：single 和 repetition ，single：只执行一次，需要配合系统的定时任务执行。repetition重复执行，需要配合durationMinute配置项执行
+		ExecType: execType,
 		// DurationMinute 时隔多久同步一次域名解析，单位为分钟
 		DurationMinute: durationMinute,
 	}, nil
@@ -130,19 +134,29 @@ func getDomainList(config *ini.File) (*[]string, *string, error) {
 }
 
 // getDurationMinute 获取同步时间
-func getDurationMinute(config *ini.File) (*time.Duration, error) {
+func getDurationMinute(config *ini.File) (*string, *time.Duration, error) {
 	timeSection, err := config.GetSection("time")
+	// 获取执行类型
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	durationMinuteKey, err := timeSection.GetKey("durationMinute")
+	execTypeKey, err := timeSection.GetKey("type")
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	durationMinute, err := durationMinuteKey.Int64()
-	if err != nil {
-		return nil, err
+	execType := execTypeKey.String()
+	// 获取执行间隔时间
+	var duration time.Duration
+	if strings.Compare(execType, "repetition") == 0 {
+		durationMinuteKey, err := timeSection.GetKey("durationMinute")
+		if err != nil {
+			return nil, nil, err
+		}
+		durationMinute, err := durationMinuteKey.Int64()
+		if err != nil {
+			return nil, nil, err
+		}
+		duration = time.Duration(durationMinute)
 	}
-	duration := time.Duration(durationMinute)
-	return &duration, err
+	return &execType, &duration, err
 }

@@ -29,8 +29,6 @@ echo "[Service]" >> $SERVICE_FILE
 echo "ExecStart=$SERVICE_PATH/$SERVICE_FILE_EXE $SERVICE_PATH/$SERVICE_FILE_CONF" >> $SERVICE_FILE
 echo "Restart=on-failure" >> $SERVICE_FILE
 echo "RestartSec=5" >> $SERVICE_FILE
-echo "User=zhang" >> $SERVICE_FILE
-echo "Group=zhang" >> $SERVICE_FILE
 echo "" >> $SERVICE_FILE
 echo "[Install]" >> $SERVICE_FILE
 echo "WantedBy=multi-user.target" >> $SERVICE_FILE

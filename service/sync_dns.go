@@ -10,9 +10,9 @@ import (
 )
 
 // SyncAllDomain 同步所有指定的域名到目前的公网IP上
-func SyncAllDomain(domainNameList *[]string, dnsType *string) error {
+func SyncAllDomain(domainNameList *[]string, dnsType, ipType, interfaceName *string) error {
 	// 获取公网IP地址
-	wanIp, err := utils.GetWanIpAddress(dnsType)
+	wanIp, err := utils.GetIpAddress(dnsType, ipType, interfaceName)
 	if err != nil {
 		return err
 	}

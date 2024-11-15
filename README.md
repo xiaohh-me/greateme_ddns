@@ -32,6 +32,8 @@ go mod tidy
 - `dnsEndpoint`: DNS的Endpoint，默认为深圳，可根据配置文件当中注释和地理位置进行修改
 - `domainList`: 域名列表，多个用逗号隔开
 - `dnsType`: 解析类型，只能填写 ipv4 和 ipv6，默认为ipv4（注意全部小写且不能为大写）
+- `ipType`: 获取IP地址的类型，可选值：wan 和 interface ，wan：获取当前公网IP地址。interface：根据网卡名称获取IP地址
+- `interfaceName`: 网卡名字，注意填写你设备可用的网卡名称。Windows获取网卡列表命令：ipconfig ，MacOS获取网卡列表命令：ifconfig，Linux获取网卡命令：ip a
 - `type`: 执行类型，可选值：single 和 repetition ，single：只执行一次，需要配合系统的定时任务执行。repetition重复执行，需要配合durationMinute配置项执行
 - `durationMinute`: 时隔多久更新一次（单位为分钟），默认为十分钟，可无需修改
 

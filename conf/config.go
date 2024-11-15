@@ -22,7 +22,11 @@ type DnsConfig struct {
 	DomainList *[]string
 	// DnsType 解析类型，只能是 ipv4 和 ipv6 （注意全部小写且不能为大写）
 	DnsType *string
-	// ExecType 执行类型，可选值：single 和 repetition ，single：只执行一次，需要配合系统的定时任务执行。repetition重复执行，需要配合durationMinute配置项执行
+	// IpType 获取IP地址的类型，可选值：wan 和 interface ，wan：获取当前公网IP地址。interface：根据网卡名称获取IP地址
+	IpType *string
+	// InterfaceName 网卡名字，注意填写你设备可用的网卡名称。Windows获取网卡列表命令：ipconfig ，MacOS获取网卡列表命令：ifconfig，Linux获取网卡命令：ip a
+	InterfaceName *string
+	// ExecType 执行类型，可选值：single 和 repetition ，single：只执行一次，需要配合系统的定时任务执行。repetition：重复执行，需要配合durationMinute配置项执行
 	ExecType *string
 	// DurationMinute 时隔多久同步一次域名解析，单位为分钟
 	DurationMinute *time.Duration
@@ -50,6 +54,15 @@ func GetConfig(path *string) (*DnsConfig, error) {
 		// 如果配置的既不是ipv4也不是ipv6，那么返回一个错误
 		return nil, errors.New(fmt.Sprintf("IP地址解析类型错误，请填写ipv4或ipv6（且只能填写小写）！您填写的值为：%v", *dnsType))
 	}
+	// 获取IP地址的方式相关的配置
+	ipType, interfaceName, err := getIpType(config)
+	if err != nil {
+		return nil, err
+	}
+	if strings.Compare("wan", *ipType) != 0 &&
+		strings.Compare("interface", *ipType) != 0 {
+		return nil, errors.New(fmt.Sprintf("获取IP地址方式填写错误，请填写wan或interface（且只能填写小写）！您填写的值为%v", *ipType))
+	}
 	// 获取同步时间
 	execType, durationMinute, err := getDurationMinute(config)
 	if err != nil {
@@ -69,6 +82,10 @@ func GetConfig(path *string) (*DnsConfig, error) {
 		DomainList: domainList,
 		// DnsType 解析类型，只能是 ipv4 和 ipv6 （注意全部小写且不能为大写）
 		DnsType: dnsType,
+		// IpType 获取IP地址的类型，可选值：wan 和 interface ，wan：获取当前公网IP地址。interface：根据网卡名称获取IP地址
+		IpType: ipType,
+		// InterfaceName 网卡名字，注意填写你设备可用的网卡名称。Windows获取网卡列表命令：ipconfig ，MacOS获取网卡列表命令：ifconfig，Linux获取网卡命令：ip a
+		InterfaceName: interfaceName,
 		// ExecType 执行类型，可选值：single 和 repetition ，single：只执行一次，需要配合系统的定时任务执行。repetition重复执行，需要配合durationMinute配置项执行
 		ExecType: execType,
 		// DurationMinute 时隔多久同步一次域名解析，单位为分钟
@@ -133,13 +150,34 @@ func getDomainList(config *ini.File) (*[]string, *string, error) {
 	return &domainList, &dnsType, nil
 }
 
-// getDurationMinute 获取同步时间
-func getDurationMinute(config *ini.File) (*string, *time.Duration, error) {
-	timeSection, err := config.GetSection("time")
-	// 获取执行类型
+// getIpType 获取IP地址的方式相关的配置
+func getIpType(config *ini.File) (*string, *string, error) {
+	ipTypeSection, err := config.GetSection("ip-type")
 	if err != nil {
 		return nil, nil, err
 	}
+	// 获取IP地址的类型
+	ipTypeKey, err := ipTypeSection.GetKey("ipType")
+	if err != nil {
+		return nil, nil, err
+	}
+	ipType := ipTypeKey.String()
+	// 获取网卡名字
+	interfaceNameKey, err := ipTypeSection.GetKey("interfaceName")
+	if err != nil {
+		return nil, nil, err
+	}
+	interfaceName := interfaceNameKey.String()
+	return &ipType, &interfaceName, nil
+}
+
+// getDurationMinute 获取同步时间
+func getDurationMinute(config *ini.File) (*string, *time.Duration, error) {
+	timeSection, err := config.GetSection("time")
+	if err != nil {
+		return nil, nil, err
+	}
+	// 获取执行类型
 	execTypeKey, err := timeSection.GetKey("type")
 	if err != nil {
 		return nil, nil, err

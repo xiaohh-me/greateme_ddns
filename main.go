@@ -38,19 +38,19 @@ func main() {
 	if strings.Compare(*dnsConfig.ExecType, "repetition") == 0 {
 		// 多次执行
 		for {
-			go _main(dnsConfig.DomainList, dnsConfig.DnsType)
+			go _main(dnsConfig.DomainList, dnsConfig.DnsType, dnsConfig.IpType, dnsConfig.InterfaceName)
 			time.Sleep(*dnsConfig.DurationMinute * time.Minute)
 		}
 	} else if strings.Compare(*dnsConfig.ExecType, "single") == 0 {
 		// 单次执行
-		_main(dnsConfig.DomainList, dnsConfig.DnsType)
+		_main(dnsConfig.DomainList, dnsConfig.DnsType, dnsConfig.IpType, dnsConfig.InterfaceName)
 	} else {
 		// 执行类型配置错误
 		log.Fatalln("执行类型（time.type）配置错误，值只能为single（单次执行）和repetition（多次执行）")
 	}
 }
 
-func _main(domainNameList *[]string, dnsType *string) {
+func _main(domainNameList *[]string, dnsType, ipType, interfaceName *string) {
 	// 捕捉所有异常，兜底的方法
 	defer func() {
 		if err := recover(); err != nil {
@@ -59,7 +59,7 @@ func _main(domainNameList *[]string, dnsType *string) {
 	}()
 
 	// 开始同步
-	err := service.SyncAllDomain(domainNameList, dnsType)
+	err := service.SyncAllDomain(domainNameList, dnsType, ipType, interfaceName)
 	if err != nil {
 		log.Printf("同步域名信息的时候发生了异常：%v\n", err)
 	}

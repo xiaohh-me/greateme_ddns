@@ -17,7 +17,7 @@ func GetAllDomainList() (*[]string, error) {
 		// 请求参数
 		queryDomainListRequest := &domain20180129.QueryDomainListRequest{
 			PageNum:  &currentPageNum,
-			PageSize: tea.Int32(10),
+			PageSize: tea.Int32(50),
 		}
 		runtime := &util.RuntimeOptions{}
 		// 请求获取域名列表
@@ -30,7 +30,7 @@ func GetAllDomainList() (*[]string, error) {
 			domainList = append(domainList, *domain.DomainName)
 		}
 		// 判断是否要继续分页
-		if int(*request.Body.TotalItemNum) <= len(domainList)+1 {
+		if int(*request.Body.TotalItemNum) <= cap(domainList) {
 			// 查询到现在的域名数量大于等于总域名数量，那么我们就跳出循环
 			break
 		}

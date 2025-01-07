@@ -4,7 +4,6 @@ import (
 	alidns20150109 "github.com/alibabacloud-go/alidns-20150109/v4/client"
 	openapi "github.com/alibabacloud-go/darabonba-openapi/v2/client"
 	domain20180129 "github.com/alibabacloud-go/domain-20180129/v4/client"
-	"github.com/alibabacloud-go/tea/tea"
 )
 
 // client 操作阿里云域名的客户端
@@ -35,22 +34,10 @@ func InitClient(accessKeyId, accessKeySecret, domainEndpoint, dnsEndpoint *strin
 		AccessKeySecret: accessKeySecret,
 		Endpoint:        dnsEndpoint,
 	}
-	// 访问的域名
-	dnsConfig.Endpoint = tea.String("alidns.cn-hangzhou.aliyuncs.com")
 	dnsResult, err := alidns20150109.NewClient(dnsConfig)
 	if err != nil {
 		return err
 	}
 	dnsClient = dnsResult
 	return nil
-}
-
-// GetDomainClient 获取初始化好的阿里云域名客户端
-func GetDomainClient() *domain20180129.Client {
-	return domainClient
-}
-
-// GetDNSClient 获取初始化好的阿里云DNS解析客户端
-func GetDNSClient() *alidns20150109.Client {
-	return dnsClient
 }

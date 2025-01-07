@@ -20,7 +20,7 @@ func GetAllDNSListByDomainNameAndRR(domainName, rr *string) (*[]*alidns20150109.
 		describeDomainRecordsRequest := &alidns20150109.DescribeDomainRecordsRequest{
 			DomainName: domainName,
 			PageNumber: &currentPageNum,
-			PageSize:   tea.Int64(10),
+			PageSize:   tea.Int64(20),
 			RRKeyWord:  rr,
 		}
 		runtime := &service.RuntimeOptions{}
@@ -32,7 +32,7 @@ func GetAllDNSListByDomainNameAndRR(domainName, rr *string) (*[]*alidns20150109.
 		dnsList = append(dnsList, dnsResult.Body.DomainRecords.Record...)
 
 		// 判断是否要继续分页
-		if int(*dnsResult.Body.TotalCount) <= len(dnsList)+1 {
+		if int(*dnsResult.Body.TotalCount) <= cap(dnsList) {
 			// 查询到现在的域名数量大于等于总域名数量，那么我们就跳出循环
 			break
 		}
@@ -78,7 +78,7 @@ func UpdateDNSRecord(recordId, rr, ipAddress *string, dnsType *string) error {
 
 // GetDNSType 获取解析的IP地址类型
 func GetDNSType(dnsType *string) *string {
-	var recordType *string = tea.String("A")
+	recordType := tea.String("A")
 	if strings.Compare("ipv6", *dnsType) == 0 {
 		recordType = tea.String("AAAA")
 	}

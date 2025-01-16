@@ -29,6 +29,17 @@ func main() {
 	if err != nil {
 		log.Fatalf("读取配置文件时候发生错误：%v\n", err)
 	}
+	// 判断域名填写是否重复
+	domainListLength := len(*dnsConfig.DomainList)
+	if domainListLength > 1 {
+		for i := 0; i < domainListLength-1; i++ {
+			for j := i + 1; j < domainListLength; j++ {
+				if strings.Compare((*dnsConfig.DomainList)[i], (*dnsConfig.DomainList)[j]) == 0 {
+					log.Fatalf("%s域名重复了\n", (*dnsConfig.DomainList)[i])
+				}
+			}
+		}
+	}
 	// 初始化阿里云域名客户端
 	err = alibaba.InitClient(dnsConfig.AccessKeyId, dnsConfig.AccessKeySecret, dnsConfig.DomainEndpoint, dnsConfig.DnsEndpoint)
 	if err != nil {

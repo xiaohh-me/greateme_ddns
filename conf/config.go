@@ -3,6 +3,7 @@ package conf
 import (
 	"errors"
 	"fmt"
+	"github.com/alibabacloud-go/tea/tea"
 	"github.com/go-ini/ini"
 	"strings"
 	"time"
@@ -22,6 +23,8 @@ type DnsConfig struct {
 	DomainList *[]string
 	// DnsType 解析类型，只能是 ipv4 和 ipv6 （注意全部小写且不能为大写）
 	DnsType *string
+	// SyncWithNoChange 在公网IP地址没有改变的时候，是否需要同步
+	SyncWithNoChange *bool
 	// IpType 获取IP地址的类型，可选值：wan 和 interface ，wan：获取当前公网IP地址。interface：根据网卡名称获取IP地址
 	IpType *string
 	// InterfaceName 网卡名字，注意填写你设备可用的网卡名称。Windows获取网卡列表命令：ipconfig ，MacOS获取网卡列表命令：ifconfig，Linux获取网卡命令：ip a
@@ -44,7 +47,7 @@ func GetConfig(path *string) (*DnsConfig, error) {
 		return nil, err
 	}
 	// 读取域名相关配置
-	domainList, dnsType, err := getDomainList(config)
+	domainList, dnsType, syncWithNoChange, err := getDomainList(config)
 	if err != nil {
 		return nil, err
 	}
@@ -82,6 +85,8 @@ func GetConfig(path *string) (*DnsConfig, error) {
 		DomainList: domainList,
 		// DnsType 解析类型，只能是 ipv4 和 ipv6 （注意全部小写且不能为大写）
 		DnsType: dnsType,
+		// SyncWithNoChange 在公网IP地址没有改变的时候，是否需要同步
+		SyncWithNoChange: syncWithNoChange,
 		// IpType 获取IP地址的类型，可选值：wan 和 interface ，wan：获取当前公网IP地址。interface：根据网卡名称获取IP地址
 		IpType: ipType,
 		// InterfaceName 网卡名字，注意填写你设备可用的网卡名称。Windows获取网卡列表命令：ipconfig ，MacOS获取网卡列表命令：ifconfig，Linux获取网卡命令：ip a
@@ -128,15 +133,15 @@ func getAliyunConfig(config *ini.File) (*string, *string, *string, *string, erro
 }
 
 // getDomainList 获取域名的配置列表
-func getDomainList(config *ini.File) (*[]string, *string, error) {
+func getDomainList(config *ini.File) (*[]string, *string, *bool, error) {
 	domainSection, err := config.GetSection("domain")
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 	// 获取域名列表
 	domainListKey, err := domainSection.GetKey("domainList")
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 	domainListStr := domainListKey.Value()
 	// 以逗号隔开获取域名列表
@@ -144,10 +149,19 @@ func getDomainList(config *ini.File) (*[]string, *string, error) {
 	// 获取解析类型，确认解析类型是ipv4或ipv6
 	dnsTypeKey, err := domainSection.GetKey("dnsType")
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 	dnsType := dnsTypeKey.Value()
-	return &domainList, &dnsType, nil
+	// 在公网IP地址没有改变的时候，是否需要同步
+	syncWithNoChangeKey, err := domainSection.GetKey("syncWithNoChange")
+	if err != nil {
+		return nil, nil, nil, err
+	}
+	syncWithNoChange, err := syncWithNoChangeKey.Int()
+	if err != nil {
+		return nil, nil, nil, err
+	}
+	return &domainList, &dnsType, tea.Bool(syncWithNoChange == 1), nil
 }
 
 // getIpType 获取IP地址的方式相关的配置

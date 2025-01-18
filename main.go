@@ -3,7 +3,9 @@ package main
 import (
 	"github.com/alibabacloud-go/tea/tea"
 	"github.com/xiaohh-me/greateme_ddns/conf"
+	"github.com/xiaohh-me/greateme_ddns/entity"
 	"github.com/xiaohh-me/greateme_ddns/service"
+	"github.com/xiaohh-me/greateme_ddns/utils"
 	"github.com/xiaohh-me/greateme_ddns/utils/alibaba"
 	"log"
 	"os"
@@ -30,15 +32,10 @@ func main() {
 		log.Fatalf("读取配置文件时候发生错误：%v\n", err)
 	}
 	// 判断域名填写是否重复
-	domainListLength := len(*dnsConfig.DomainList)
-	if domainListLength > 1 {
-		for i := 0; i < domainListLength-1; i++ {
-			for j := i + 1; j < domainListLength; j++ {
-				if strings.Compare((*dnsConfig.DomainList)[i], (*dnsConfig.DomainList)[j]) == 0 {
-					log.Fatalf("%s域名重复了\n", (*dnsConfig.DomainList)[i])
-				}
-			}
-		}
+	domainList := *dnsConfig.DomainList // 域名列表
+	err = utils.CheckDomainRepeat(&domainList)
+	if err != nil {
+		log.Fatalln(err)
 	}
 	// 初始化阿里云域名客户端
 	err = alibaba.InitClient(dnsConfig.AccessKeyId, dnsConfig.AccessKeySecret, dnsConfig.DomainEndpoint, dnsConfig.DnsEndpoint)
@@ -46,22 +43,29 @@ func main() {
 		log.Fatalf("初始化阿里云域名客户端的时候发生了错误：%v\n", err)
 	}
 	log.Println("域名和DNS解析客户端初始化成功")
+	// 初始化获取解析域名对应的二级域名列表
+	domainAnalyzeList, err := alibaba.GetAllDomainAnalyzeByDomainList(&domainList)
+	if err != nil {
+		log.Fatalf("获取域名列表时发生错误：%v\n", err)
+	} else if len(*domainAnalyzeList) == 0 {
+		log.Fatalln("域名列表为空，程序退出")
+	}
 	if strings.Compare(*dnsConfig.ExecType, "repetition") == 0 {
 		// 多次执行
 		for {
-			go _main(dnsConfig.DomainList, dnsConfig.DnsType, dnsConfig.IpType, dnsConfig.InterfaceName)
+			go _main(domainAnalyzeList, dnsConfig.SyncWithNoChange, dnsConfig.DnsType, dnsConfig.IpType, dnsConfig.InterfaceName)
 			time.Sleep(*dnsConfig.DurationMinute * time.Minute)
 		}
 	} else if strings.Compare(*dnsConfig.ExecType, "single") == 0 {
 		// 单次执行
-		_main(dnsConfig.DomainList, dnsConfig.DnsType, dnsConfig.IpType, dnsConfig.InterfaceName)
+		_main(domainAnalyzeList, tea.Bool(true), dnsConfig.DnsType, dnsConfig.IpType, dnsConfig.InterfaceName)
 	} else {
 		// 执行类型配置错误
 		log.Fatalln("执行类型（time.type）配置错误，值只能为single（单次执行）和repetition（多次执行）")
 	}
 }
 
-func _main(domainNameList *[]string, dnsType, ipType, interfaceName *string) {
+func _main(domainList *[]entity.DomainAnalyze, syncWithNoChange *bool, dnsType, ipType, interfaceName *string) {
 	// 捕捉所有异常，兜底的方法
 	defer func() {
 		if err := recover(); err != nil {
@@ -70,7 +74,7 @@ func _main(domainNameList *[]string, dnsType, ipType, interfaceName *string) {
 	}()
 
 	// 开始同步
-	err := service.SyncAllDomain(domainNameList, dnsType, ipType, interfaceName)
+	err := service.SyncAllDomain(domainList, syncWithNoChange, dnsType, ipType, interfaceName)
 	if err != nil {
 		log.Printf("同步域名信息的时候发生了异常：%v\n", err)
 	}
